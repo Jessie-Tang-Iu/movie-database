@@ -1,3 +1,36 @@
+## Project Title
+
+movie-database
+
+## Description
+
+This is a group project for building a movie login website for browsing different movies and get the details information. 
+
+## Installation Instructions
+
+Download the project to your local.
+Run in VS code.
+Using the Terminal in VS Code.
+Run "npm install" and "npm run dev". 
+Click on "http://localhost:3000" generated on the Terminal.
+You will see the web page on your browser. 
+
+## Usage
+
+## Contributing
+
+This project is not open to contributing. 
+
+## Credits
+
+Acknowledge any collaborators or sources of inspiration.
+
+
+## License
+ 
+This project is open source and available under the [MIT License](LICENSE).
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
