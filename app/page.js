@@ -43,6 +43,10 @@ export default function Home() {
             className="text-lg bg-blue-600 text-white rounded px-2 py-1 mt-4"
             type="button">Sign Out</button>
           </div>
+
+        <Link href="/movies" className={linkStyles}>
+          <p>Go to Movies</p>
+        </Link>
         </section>
       ) : (
         <section>
