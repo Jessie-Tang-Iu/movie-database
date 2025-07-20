@@ -1,6 +1,5 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { X, Play, Plus, ThumbsUp, ThumbsDown } from 'lucide-react';
 
 export default function MovieModal({ movie, isOpen, onClose }) {
   const [imageError, setImageError] = useState(false);
@@ -37,7 +36,7 @@ export default function MovieModal({ movie, isOpen, onClose }) {
           onClick={onClose}
           className="absolute top-4 right-4 z-10 bg-neutral-800 hover:bg-neutral-700 rounded-full p-2 transition-colors"
         >
-          <X className="w-6 h-6 text-white" />
+          <span className="text-white text-xl font-bold">✕</span>
         </button>
 
         {/* Hero section with image */}
@@ -59,18 +58,18 @@ export default function MovieModal({ movie, isOpen, onClose }) {
             {/* Action buttons */}
             <div className="flex gap-3 mb-4">
               <button className="flex items-center gap-2 bg-white text-black px-6 py-2 rounded-md font-semibold hover:bg-gray-200 transition-colors">
-                <Play className="w-5 h-5" />
+                <span className="text-lg">▶</span>
                 Play
               </button>
               <button className="flex items-center gap-2 bg-neutral-600 bg-opacity-70 text-white px-6 py-2 rounded-md font-semibold hover:bg-opacity-90 transition-colors">
-                <Plus className="w-5 h-5" />
+                <span className="text-lg">+</span>
                 My List
               </button>
               <button className="p-2 border-2 border-gray-400 rounded-full hover:border-white transition-colors">
-                <ThumbsUp className="w-5 h-5 text-white" />
+                <span className="text-white text-lg">👍</span>
               </button>
               <button className="p-2 border-2 border-gray-400 rounded-full hover:border-white transition-colors">
-                <ThumbsDown className="w-5 h-5 text-white" />
+                <span className="text-white text-lg">👎</span>
               </button>
             </div>
           </div>
