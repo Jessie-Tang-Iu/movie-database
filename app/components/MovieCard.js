@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 
-export default function MovieCard({ posterUrl = '', title = 'Movie Title' }) {
+export default function MovieCard({ posterUrl = '', title = 'Movie Title', movie, onMovieClick }) {
   const fallbackImage = '/fallback2.png';
   const [imgSrc, setImgSrc] = useState(null);
 
@@ -9,10 +9,17 @@ export default function MovieCard({ posterUrl = '', title = 'Movie Title' }) {
     setImgSrc(posterUrl || fallbackImage);
   }, [posterUrl]);
 
+  const handleClick = () => {
+    if (onMovieClick) {
+      onMovieClick(movie || { title, posterUrl });
+    }
+  };
+
   return (
     <div
-      className="relative flex-shrink-0 rounded-lg overflow-hidden bg-neutral-800 shadow hover:scale-105 transition-transform duration-300"
+      className="relative flex-shrink-0 rounded-lg overflow-hidden bg-neutral-800 shadow hover:scale-105 transition-transform duration-300 cursor-pointer"
       style={{ width: '250px', height: '140px' }}
+      onClick={handleClick}
     >
       <img
         src={imgSrc}
