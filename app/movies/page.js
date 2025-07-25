@@ -139,48 +139,12 @@ export default function Page() {
     <div className="bg-black text-white min-h-screen">
       <NavBar />
     
-      <Library type="Trending" />
-      <Library type="Newest" />
+      <Library type="Trending Now" onMovieClick={handleMovieClick} />
+      <Library type="New Release" onMovieClick={handleMovieClick} />
       
-      {genres.map(
-        (item) => ( <Genre genre={item} /> )
-      )}
-
-      <MovieRow 
-        title="Boredom Busters" 
-        movies={dummyMovies} 
-        onMovieClick={handleMovieClick}
-      />
-      <MovieRow 
-        title="Trending Now" 
-        movies={dummyMovies} 
-        onMovieClick={handleMovieClick}
-      />
-      <MovieRow 
-        title="Popular on Netflix" 
-        movies={dummyMovies} 
-        onMovieClick={handleMovieClick}
-      />
-      <MovieRow 
-        title="New Releases" 
-        movies={dummyMovies} 
-        onMovieClick={handleMovieClick}
-      />
-      <MovieRow 
-        title="Award Winners" 
-        movies={dummyMovies} 
-        onMovieClick={handleMovieClick}
-      />
-      <MovieRow 
-        title="Because You Watched" 
-        movies={dummyMovies} 
-        onMovieClick={handleMovieClick}
-      />
-      <MovieRow 
-        title="Last Chance" 
-        movies={dummyMovies} 
-        onMovieClick={handleMovieClick}
-      />
+      {/* {genres.map(
+        (item) => ( <Genre key={item}  genre={item} onMovieClick={handleMovieClick} /> )
+      )} */}
 
       {/* Movie Modal */}
       <MovieModal

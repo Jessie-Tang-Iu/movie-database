@@ -26,7 +26,7 @@ export default function MovieModal({ movie, isOpen, onClose }) {
 
   if (!isOpen || !movie) return null;
 
-  const posterUrl = movie.posterUrl && !imageError ? movie.posterUrl : fallbackImage;
+  const posterUrl = movie.posterWUrl && !imageError ? movie.posterWUrl : fallbackImage;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
@@ -83,7 +83,7 @@ export default function MovieModal({ movie, isOpen, onClose }) {
               <div className="flex items-center gap-4 mb-4 text-sm">
                 <span className="text-green-400 font-semibold">98% Match</span>
                 <span className="border border-gray-400 px-1 text-gray-400">HD</span>
-                <span className="text-gray-300">2023</span>
+                <span className="text-gray-300">{movie.year}</span>
                 <span className="border border-gray-400 px-1 text-gray-400">13+</span>
               </div>
               
@@ -117,12 +117,15 @@ export default function MovieModal({ movie, isOpen, onClose }) {
                 </span>
               </div>
               
-              <div>
-                <span className="text-gray-400">Duration: </span>
-                <span className="text-white">
-                  {movie.duration || "2h 28m"}
-                </span>
-              </div>
+              {movie.duration && 
+                <div>
+                  <span className="text-gray-400">Duration: </span>
+                  <span className="text-white">
+                    {movie.duration || "2h 28m"}
+                  </span>
+                </div>
+              }
+                
             </div>
           </div>
 

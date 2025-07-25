@@ -2,24 +2,28 @@
 import React, { useState, useEffect, use } from 'react';
 import MovieRow from "./MovieRow";
 
-const clientID = "12200e77fe00a17c44b6b7a79d977d4e35bd3b3d77ebf9899ad60bd15af14ea6";
+const clientID = "637397882bce97dc00d38f79c3d19c443b5edaded0448c9bc0bbebc879d1124a";
 
-export default function Genre({ genre }) {
+export default function Genre({ genre, onMovieClick }) {
 
     const [movieList, setMovieList] = useState([]);
     const [movieIds, setMovieIds] = useState([]);
     const [posterIds, setPosterIds] = useState([]);
+    const [durationList, setDurationList] = useState([]);
     
-    async function getListOfTrendingMoviesByGenre(genre) {
+    async function getListOfMoviesByGenre(genre) {
         try {
             const response = await fetch(`https://api.simkl.com/movies/genres/${genre}/type/country/this-year/popular-this-month?client_id=${clientID}`);
             if (!response.ok) console.log(response.status);
             const data = await response.json();
-            let idArray = data.map((movie) => (movie.ids.simkl_id));
-            let posterArray = data.map((movie) => (movie.poster));
-            // console.dir(idArray.length);
-            setMovieIds(idArray.slice(0, 10));
-            setPosterIds(posterArray.slice(0, 10));
+            if (data != null) {
+                let idArray = data.map((movie) => (movie.ids.simkl_id));
+                setMovieIds(idArray.slice(0, 2));
+                let posterArray = data.map((movie) => (movie.poster));
+                setPosterIds(posterArray.slice(0, 2));
+                let durationArray = data.map((movie) => (movie.runtime));
+                setDurationList(durationArray.slice(0, 2));
+            }
         } catch (error) {
             console.log("Error fetching library data:", error);
         }
@@ -37,7 +41,7 @@ export default function Genre({ genre }) {
     }
 
     useEffect(() => {
-        getListOfTrendingMoviesByGenre(genre);
+        getListOfMoviesByGenre(genre);
     }, []);
     
     useEffect(() => {
@@ -46,6 +50,8 @@ export default function Genre({ genre }) {
                 let thisMovies = [];
                 for (let i = 0; i < movieIds.length; i++) {
                     let movie = await getMovieById(movieIds[i]);
+                    movie.id = movieIds[i];
+                    movie.duration = durationList[i];
                     movie.posterMUrl = `https://wsrv.nl/?url=https://simkl.in/posters/${posterIds[i]}_m.jpg`;
                     movie.posterWUrl = `https://wsrv.nl/?url=https://simkl.in/posters/${posterIds[i]}_w.jpg`;
                     thisMovies.push(movie);
@@ -59,7 +65,7 @@ export default function Genre({ genre }) {
 
     return (
         <div>
-            { (movieList.length > 0) && <MovieRow title={genre} movies={movieList} /> }
+            { (movieList.length > 0) && <MovieRow title={genre} movies={movieList} onMovieClick={onMovieClick}/> }
         </div>
     );
 }
