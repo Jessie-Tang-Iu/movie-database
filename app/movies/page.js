@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useState } from "react";
 import Library from "../components/Library";
 import Genre from "../components/Genre";
 import MovieRow from "../components/MovieRow";
@@ -32,9 +31,9 @@ const genres = [
   "Western",
 ];
 
-const api_key = TMDB_API_KEY;
-
 export default function Page() {
+  const api_key = TMDB_API_KEY;
+
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -50,48 +49,46 @@ export default function Page() {
   };
 
   const handleSearch = async (text) => {
-    console.log("[SearchBar] Input text:", text);
+    const query = text.trim();
+    if (!query) return;
 
-    if (!text.trim()) {
-      console.log("[SearchBar] Empty input. Clearing results.");
-      setSearchResults([]);
-      return;
-    }
+    const url = `https://api.simkl.com/search/movie?q=${encodeURIComponent(
+      query
+    )}&client_id=${api_key}`;
+
+    console.log("[Search] Search URL:", url);
 
     try {
-      const url = `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(
-        text
-      )}&api_key=${api_key}`;
-      console.log("[SearchBar] Fetching from:", url);
-
       const res = await fetch(url);
-      console.log("[SearchBar] Fetch status:", res.status);
+      console.log("[Search] Fetch status:", res.status);
 
       if (!res.ok) {
-        console.error("[SearchBar] Fetch failed:", res.status);
-        setSearchResults([]);
+        console.error("[Search] Fetch failed:", res.status);
         return;
       }
 
+      // ✅ You forgot this line in your version
       const data = await res.json();
-      console.log("[SearchBar] API response:", data);
+      console.log("[Search] API raw response:", data);
 
-      if (!data.results || !Array.isArray(data.results)) {
-        console.warn("[SearchBar] No valid results:", data);
-        setSearchResults([]);
-        return;
+      const raw = data[0];
+      const firstResult = raw?.movie || raw?.show || raw;
+
+      if (firstResult) {
+        console.log("[Search] Final selected movie:", firstResult);
+        setSelectedMovie(firstResult);
+        setIsModalOpen(true);
+      } else {
+        console.warn("[Search] No valid movie found");
       }
-
-      setSearchResults(data.results.slice(0, 6));
-    } catch (error) {
-      console.error("[SearchBar] Request error:", error);
-      setSearchResults([]);
+    } catch (err) {
+      console.error("[Search] Error:", err);
     }
   };
 
   return (
     <div className="bg-black text-white min-h-screen">
-      <NavBar />
+      <NavBar onSearch={handleSearch} />
 
       <Library type="Trending Now" onMovieClick={handleMovieClick} />
       <Library type="New Release" onMovieClick={handleMovieClick} />

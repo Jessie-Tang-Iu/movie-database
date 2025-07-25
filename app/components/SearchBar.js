@@ -13,21 +13,20 @@ export default function SearchBar({
   const handleChange = (e) => {
     const value = e.target.value;
     console.log("[SearchBar] onChange triggered:", value);
-    setInputValue(value);
-    onSearch?.(value); // Optional live update
+    setInputValue(value); // ✅ only update state
   };
 
   const handleKeyDown = (e) => {
     console.log("[SearchBar] onKeyDown:", e.key);
     if (e.key === "Enter") {
       console.log("[SearchBar] Enter pressed, sending search:", inputValue);
-      onSearch?.(inputValue);
+      onSearch?.(inputValue.trim());
     }
   };
 
   const handleIconClick = () => {
     console.log("[SearchBar] 🔍 icon clicked, sending search:", inputValue);
-    onSearch?.(inputValue);
+    onSearch?.(inputValue.trim());
   };
 
   return (
