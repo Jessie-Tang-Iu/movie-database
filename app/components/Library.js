@@ -56,7 +56,7 @@ export default function Library({ type, onMovieClick }) {
     }, []);
 
     useEffect(() => {
-        getListOfMovies(type);
+        if (fetchUrl != "") { getListOfMovies(type); }
     }, [fetchUrl]);
 
     useEffect(() => {
