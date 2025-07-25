@@ -1,6 +1,6 @@
 import MovieCard from './MovieCard';
 
-export default function MovieRow({ title, movies }) {
+export default function MovieRow({ title, movies, onMovieClick }) {
   return (
     <div className="my-5">
       <h2 className="text-xl font-semibold px-4 mb-2">{title}</h2>
@@ -11,6 +11,8 @@ export default function MovieRow({ title, movies }) {
               key={index}
               title={movie.title}
               posterUrl={movie.posterWUrl}
+              movie={movie}
+              onMovieClick={onMovieClick}
             />
           ))}
         </div>
