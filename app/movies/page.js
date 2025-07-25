@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useState } from "react";
 import Library from "../components/Library";
 import Genre from "../components/Genre";
 import MovieRow from "../components/MovieRow";
@@ -90,41 +91,7 @@ export default function Page() {
 
   return (
     <div className="bg-black text-white min-h-screen">
-      <NavBar onSearch={handleSearch} />
-
-      {/* Search Results Section */}
-      {searchResults.length > 0 && (
-        <div className="p-4">
-          <h2 className="text-lg font-bold mb-3">Search Results</h2>
-          <div className="flex gap-4 overflow-x-auto">
-            {searchResults.map((movie, idx) => (
-              <div
-                key={idx}
-                className="cursor-pointer"
-                onClick={() =>
-                  handleMovieClick({
-                    title: movie.title,
-                    posterWUrl: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
-                    description: movie.overview,
-                    year: movie.release_date?.slice(0, 4),
-                    cast: "N/A",
-                    genres: "N/A",
-                    director: "N/A",
-                    duration: "2h",
-                  })
-                }
-              >
-                <img
-                  src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
-                  className="w-40 h-60 object-cover rounded-lg shadow"
-                  alt={movie.title}
-                />
-                <p className="text-sm text-center mt-2">{movie.title}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <NavBar />
 
       <Library type="Trending Now" onMovieClick={handleMovieClick} />
       <Library type="New Release" onMovieClick={handleMovieClick} />
