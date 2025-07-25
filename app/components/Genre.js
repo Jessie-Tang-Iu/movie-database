@@ -9,17 +9,21 @@ export default function Genre({ genre, onMovieClick }) {
     const [movieList, setMovieList] = useState([]);
     const [movieIds, setMovieIds] = useState([]);
     const [posterIds, setPosterIds] = useState([]);
+    const [durationList, setDurationList] = useState([]);
     
     async function getListOfMoviesByGenre(genre) {
         try {
             const response = await fetch(`https://api.simkl.com/movies/genres/${genre}/type/country/this-year/popular-this-month?client_id=${clientID}`);
             if (!response.ok) console.log(response.status);
             const data = await response.json();
-            let idArray = data.map((movie) => (movie.ids.simkl_id));
-            let posterArray = data.map((movie) => (movie.poster));
-            // console.dir(idArray.length);
-            setMovieIds(idArray.slice(0, 2));
-            setPosterIds(posterArray.slice(0, 2));
+            if (data != null) {
+                let idArray = data.map((movie) => (movie.ids.simkl_id));
+                setMovieIds(idArray.slice(0, 2));
+                let posterArray = data.map((movie) => (movie.poster));
+                setPosterIds(posterArray.slice(0, 2));
+                let durationArray = data.map((movie) => (movie.runtime));
+                setDurationList(durationArray.slice(0, 2));
+            }
         } catch (error) {
             console.log("Error fetching library data:", error);
         }
@@ -46,6 +50,8 @@ export default function Genre({ genre, onMovieClick }) {
                 let thisMovies = [];
                 for (let i = 0; i < movieIds.length; i++) {
                     let movie = await getMovieById(movieIds[i]);
+                    movie.id = movieIds[i];
+                    movie.duration = durationList[i];
                     movie.posterMUrl = `https://wsrv.nl/?url=https://simkl.in/posters/${posterIds[i]}_m.jpg`;
                     movie.posterWUrl = `https://wsrv.nl/?url=https://simkl.in/posters/${posterIds[i]}_w.jpg`;
                     thisMovies.push(movie);

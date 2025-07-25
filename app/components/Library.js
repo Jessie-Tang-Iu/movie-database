@@ -11,6 +11,7 @@ export default function Library({ type, onMovieClick }) {
     const [movieList, setMovieList] = useState([]);
     const [movieIds, setMovieIds] = useState([]);
     const [posterIds, setPosterIds] = useState([]);
+    const [durationList, setDurationList] = useState([]);
 
     async function getListOfMovies(type) {
         try {
@@ -20,10 +21,11 @@ export default function Library({ type, onMovieClick }) {
             const plData = await plResponse.json();
             // console.dir(plData);
             let idArray = plData.map((movie) => (movie.ids.simkl_id));
-            let posterArray = plData.map((movie) => (movie.poster));
-            // console.dir(idArray.length);
             setMovieIds(idArray.slice(0, 3));
+            let posterArray = plData.map((movie) => (movie.poster));
             setPosterIds(posterArray.slice(0, 3));
+            let durationArray = plData.map((movie) => (movie.runtime));
+            setDurationList(durationArray.slice(0, 3));
         } catch (error) {
             console.log("Error fetching library data:", error);
         }
@@ -64,6 +66,7 @@ export default function Library({ type, onMovieClick }) {
                 for (let i = 0; i < movieIds.length; i++) {
                     let movie = await getMovieById(movieIds[i]);
                     movie.id = movieIds[i];
+                    movie.duration = durationList[i];
                     movie.posterMUrl = `https://wsrv.nl/?url=https://simkl.in/posters/${posterIds[i]}_m.jpg`;
                     movie.posterWUrl = `https://wsrv.nl/?url=https://simkl.in/posters/${posterIds[i]}_w.jpg`;
                     thisMovies.push(movie);

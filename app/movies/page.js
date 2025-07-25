@@ -142,9 +142,9 @@ export default function Page() {
       <Library type="Trending Now" onMovieClick={handleMovieClick} />
       <Library type="New Release" onMovieClick={handleMovieClick} />
       
-      {genres.map(
+      {/* {genres.map(
         (item) => ( <Genre key={item}  genre={item} onMovieClick={handleMovieClick} /> )
-      )}
+      )} */}
 
       {/* Movie Modal */}
       <MovieModal
