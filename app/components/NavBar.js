@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUserAuth } from "../../app/_utils/auth-context";
+import SearchBar from "./SearchBar";
 
 export default function NavBar({ onSearch }) {
   const router = useRouter();
@@ -31,12 +32,7 @@ export default function NavBar({ onSearch }) {
 
       {/* Right side: search + logout */}
       <div className="flex items-center space-x-4">
-        <input
-          type="text"
-          placeholder="Search..."
-          onChange={(e) => onSearch?.(e.target.value)}
-          className="rounded-md px-3 py-1 text-sm text-black bg-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-        />
+        <SearchBar onSearch={onSearch} />
         {user && (
           <button
             onClick={handleSignOut}
