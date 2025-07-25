@@ -9,15 +9,15 @@ export default function Banner({ movies = [] }) {
 
   useEffect(() => {
     if (movies.length > 0) {
-      const filtered = movies.filter((m) => m.posterUrl); // only valid-looking ones
+      const filtered = movies.filter((m) => m.posterWUrl); // only valid-looking ones
       const randomIndex = Math.floor(Math.random() * filtered.length);
       const movie = filtered[randomIndex];
 
       // Preload and validate image
       const img = new Image();
-      img.src = movie?.posterUrl || fallbackImage;
+      img.src = movie?.posterWUrl || fallbackImage;
       img.onload = () => {
-        setBgImage(movie.posterUrl);
+        setBgImage(movie.posterWUrl);
         setRandomMovie(movie);
       };
       img.onerror = () => {

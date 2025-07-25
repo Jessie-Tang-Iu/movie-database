@@ -1,10 +1,14 @@
 "use client";
 
 import { useState } from 'react';
+import Library from "../components/Library";
+import Genre from "../components/Genre";
 import MovieRow from "../components/MovieRow";
 import NavBar from "../components/NavBar";
 import Banner from "../components/Banner";
 import MovieModal from "../components/MovieModal";
+
+const genres = ['Action', 'Animation', 'Crime', 'Drama', 'Family', 'History', 'Music', 'Romance', 'Thriller', 'War', 'Adventure', 'Comedy', 'Documentary', 'Erotica', 'Fantasy', 'Horror', 'Mystery', 'Science fiction', 'Western'];
 
 const dummyMovies = [
   { 
@@ -134,7 +138,13 @@ export default function Page() {
   return (
     <div className="bg-black text-white min-h-screen">
       <NavBar />
-      <Banner movies={dummyMovies} />
+    
+      <Library type="Trending" />
+      <Library type="Newest" />
+      
+      {genres.map(
+        (item) => ( <Genre genre={item} /> )
+      )}
 
       <MovieRow 
         title="Boredom Busters" 
