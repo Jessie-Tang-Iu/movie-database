@@ -32,8 +32,14 @@ export default function NavBar({ onSearch }) {
           >
             Movies
           </Link>
-          <Link href="/tv" className="hover:text-cyan-400 transition-colors">
+          {/* <Link href="/tv" className="hover:text-cyan-400 transition-colors">
             TV Shows
+          </Link> */}
+          <Link
+            href="/test-fetch"
+            className="hover:text-cyan-400 transition-colors"
+          >
+            Test
           </Link>
         </div>
 
