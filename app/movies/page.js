@@ -7,8 +7,8 @@ import MovieRow from "../components/MovieRow";
 import NavBar from "../components/NavBar";
 import Banner from "../components/Banner";
 import MovieModal from "../components/MovieModal";
-import { TMDB_API_KEY } from "../_utils/thekey";
-
+import { TMDB_API_KEY, SIMKL_KEY } from "../_utils/thekey";
+import MovieModal2 from "../components/MovieModel_TMBD";
 const genres = [
   "Action",
   "Animation",
@@ -38,9 +38,61 @@ export default function Page() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
 
-  const handleMovieClick = (movie) => {
-    setSelectedMovie(movie);
-    setIsModalOpen(true);
+  const handleMovieClick = async (movie) => {
+    try {
+      if (!movie?.title) return;
+
+      // Step 1: Search TMDB by title
+      const searchRes = await fetch(
+        `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(
+          movie.title
+        )}&api_key=${api_key}`
+      );
+      const searchData = await searchRes.json();
+      const tmdbMatch = searchData.results?.[0];
+
+      if (!tmdbMatch?.id) {
+        console.warn("TMDB movie not found");
+        return;
+      }
+
+      // Step 2: Fetch details using correct TMDB id
+      const detailsRes = await fetch(
+        `https://api.themoviedb.org/3/movie/${tmdbMatch.id}?api_key=${api_key}&language=en-US`
+      );
+      const details = await detailsRes.json();
+
+      const creditsRes = await fetch(
+        `https://api.themoviedb.org/3/movie/${tmdbMatch.id}/credits?api_key=${api_key}`
+      );
+      const credits = await creditsRes.json();
+
+      const enrichedMovie = {
+        title: tmdbMatch.title || movie.title,
+        overview: details.overview || "No description available.",
+        runtime: details.runtime
+          ? `${Math.floor(details.runtime / 60)}h ${details.runtime % 60}m`
+          : "N/A",
+        genres: details.genres?.map((g) => g.name).join(", ") || "N/A",
+        cast:
+          credits.cast
+            ?.slice(0, 3)
+            .map((p) => p.name)
+            .join(", ") || "N/A",
+        director:
+          credits.crew?.find((member) => member.job === "Director")?.name ||
+          "N/A",
+        poster_path: tmdbMatch.poster_path,
+        backdrop_path: tmdbMatch.backdrop_path,
+      };
+
+      console.log("[TMDB] Final enriched movie:", enrichedMovie);
+
+      setSelectedMovie(enrichedMovie);
+      setIsModalOpen(true);
+    } catch (err) {
+      console.error("Error enriching TMDB movie:", err);
+    }
   };
 
   const closeModal = () => {
@@ -98,7 +150,13 @@ export default function Page() {
       )} */}
 
       {/* Movie Modal */}
-      <MovieModal
+      {/* <MovieModal
+        movie={selectedMovie}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+      /> */}
+
+      <MovieModal2
         movie={selectedMovie}
         isOpen={isModalOpen}
         onClose={closeModal}

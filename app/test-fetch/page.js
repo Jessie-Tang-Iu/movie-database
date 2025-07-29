@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TMDB_API_KEY, TMDB_API_KEY2 } from "../_utils/thekey";
+import { SIMKL_KEY, TMDB_API_KEY } from "../_utils/thekey";
 
 export default function TestFetchPage() {
   const [movies, setMovies] = useState([]);
@@ -11,7 +11,7 @@ export default function TestFetchPage() {
     async function fetchCombinedMovies() {
       try {
         const res = await fetch(
-          `https://api.simkl.com/movies/trending/day?client_id=${TMDB_API_KEY}`
+          `https://api.simkl.com/movies/trending/day?client_id=${SIMKL_KEY}`
         );
 
         if (!res.ok) throw new Error(`Simkl Error ${res.status}`);
@@ -27,7 +27,7 @@ export default function TestFetchPage() {
             // Try TMDB Find API using IMDb ID
             if (imdbId) {
               const tmdbRes = await fetch(
-                `https://api.themoviedb.org/3/find/${imdbId}?api_key=${TMDB_API_KEY2}&external_source=imdb_id`
+                `https://api.themoviedb.org/3/find/${imdbId}?api_key=${TMDB_API_KEY}&external_source=imdb_id`
               );
               const tmdbJson = await tmdbRes.json();
               tmdbData = tmdbJson?.movie_results?.[0] || null;
@@ -41,7 +41,7 @@ export default function TestFetchPage() {
 
               if (title && year) {
                 const searchRes = await fetch(
-                  `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY2}&query=${encodeURIComponent(
+                  `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(
                     title
                   )}&year=${year}`
                 );

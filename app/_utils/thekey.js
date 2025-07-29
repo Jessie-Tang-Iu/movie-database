@@ -1,8 +1,8 @@
 // bad idea: apiKey.js
-export const TMDB_API_KEY =
+export const SIMKL_KEY =
   "b8544baccd48a8f23d54da64b59ace90d7e33b1b8c3ad50fe161116bbd100b96";
 
-export const TMDB_API_KEY2 = "0892d817b06593c021f79693fbff9e78";
+export const TMDB_API_KEY = "0892d817b06593c021f79693fbff9e78";
 
 // I have 3 keys:
 // 637397882bce97dc00d38f79c3d19c443b5edaded0448c9bc0bbebc879d1124a
