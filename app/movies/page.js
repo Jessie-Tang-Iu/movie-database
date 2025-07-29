@@ -6,33 +6,12 @@ import Genre from "../components/Genre";
 import MovieRow from "../components/MovieRow";
 import NavBar from "../components/NavBar";
 import Banner from "../components/Banner";
-import MovieModal from "../components/MovieModal";
-import { TMDB_API_KEY, SIMKL_KEY } from "../_utils/thekey";
 import MovieModal2 from "../components/MovieModel_TMBD";
-const genres = [
-  "Action",
-  "Animation",
-  "Crime",
-  "Drama",
-  "Family",
-  "History",
-  "Music",
-  "Romance",
-  "Thriller",
-  "War",
-  "Adventure",
-  "Comedy",
-  "Documentary",
-  "Erotica",
-  "Fantasy",
-  "Horror",
-  "Mystery",
-  "Science fiction",
-  "Western",
-];
+import { TMDB_API_KEY, SIMKL_KEY } from "../_utils/thekey";
 
 export default function Page() {
-  const api_key = TMDB_API_KEY;
+  const tmdbKey = TMDB_API_KEY;
+  const simklKey = SIMKL_KEY;
 
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,7 +25,7 @@ export default function Page() {
       const searchRes = await fetch(
         `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(
           movie.title
-        )}&api_key=${api_key}`
+        )}&api_key=${tmdbKey}`
       );
       const searchData = await searchRes.json();
       const tmdbMatch = searchData.results?.[0];
@@ -56,14 +35,14 @@ export default function Page() {
         return;
       }
 
-      // Step 2: Fetch details using correct TMDB id
+      // Step 2: Fetch details using TMDB ID
       const detailsRes = await fetch(
-        `https://api.themoviedb.org/3/movie/${tmdbMatch.id}?api_key=${api_key}&language=en-US`
+        `https://api.themoviedb.org/3/movie/${tmdbMatch.id}?api_key=${tmdbKey}&language=en-US`
       );
       const details = await detailsRes.json();
 
       const creditsRes = await fetch(
-        `https://api.themoviedb.org/3/movie/${tmdbMatch.id}/credits?api_key=${api_key}`
+        `https://api.themoviedb.org/3/movie/${tmdbMatch.id}/credits?api_key=${tmdbKey}`
       );
       const credits = await creditsRes.json();
 
@@ -77,16 +56,16 @@ export default function Page() {
         cast:
           credits.cast
             ?.slice(0, 3)
-            .map((p) => p.name)
-            .join(", ") || "N/A",
+            ?.map((p) => p.name)
+            ?.join(", ") || "N/A",
         director:
           credits.crew?.find((member) => member.job === "Director")?.name ||
           "N/A",
         poster_path: tmdbMatch.poster_path,
         backdrop_path: tmdbMatch.backdrop_path,
+        release_date: tmdbMatch.release_date,
+        vote_average: tmdbMatch.vote_average,
       };
-
-      console.log("[TMDB] Final enriched movie:", enrichedMovie);
 
       setSelectedMovie(enrichedMovie);
       setIsModalOpen(true);
@@ -104,37 +83,29 @@ export default function Page() {
     const query = text.trim();
     if (!query) return;
 
-    const url = `https://api.simkl.com/search/movie?q=${encodeURIComponent(
-      query
-    )}&client_id=${api_key}`;
-
-    console.log("[Search] Search URL:", url);
-
     try {
+      const url = `https://api.simkl.com/search/movie?q=${encodeURIComponent(
+        query
+      )}&client_id=${simklKey}`;
       const res = await fetch(url);
-      console.log("[Search] Fetch status:", res.status);
+      const data = await res.json();
+      console.log("[Simkl] Raw search data:", data);
 
-      if (!res.ok) {
-        console.error("[Search] Fetch failed:", res.status);
+      const validResults = data
+        .map((entry) => entry?.movie || entry?.show || entry)
+        .filter((item) => item?.title)
+        .slice(0, 3); // 🔥 Only take 3 results
+
+      if (validResults.length === 0) {
+        console.warn("No usable search results");
         return;
       }
 
-      // ✅ You forgot this line in your version
-      const data = await res.json();
-      console.log("[Search] API raw response:", data);
-
-      const raw = data[0];
-      const firstResult = raw?.movie || raw?.show || raw;
-
-      if (firstResult) {
-        console.log("[Search] Final selected movie:", firstResult);
-        setSelectedMovie(firstResult);
-        setIsModalOpen(true);
-      } else {
-        console.warn("[Search] No valid movie found");
-      }
+      // Try TMDB enrichment on first result
+      const simklMovie = validResults[0];
+      await handleMovieClick(simklMovie);
     } catch (err) {
-      console.error("[Search] Error:", err);
+      console.error("Search failed:", err);
     }
   };
 
@@ -145,16 +116,10 @@ export default function Page() {
       <Library type="Trending Now" onMovieClick={handleMovieClick} />
       <Library type="New Release" onMovieClick={handleMovieClick} />
 
-      {/* {genres.map(
-        (item) => ( <Genre key={item}  genre={item} onMovieClick={handleMovieClick} /> )
-      )} */}
-
-      {/* Movie Modal */}
-      {/* <MovieModal
-        movie={selectedMovie}
-        isOpen={isModalOpen}
-        onClose={closeModal}
-      /> */}
+      {/* Optional genres */}
+      {/* {genres.map((item) => (
+        <Genre key={item} genre={item} onMovieClick={handleMovieClick} />
+      ))} */}
 
       <MovieModal2
         movie={selectedMovie}

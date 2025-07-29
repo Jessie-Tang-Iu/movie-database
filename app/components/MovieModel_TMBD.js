@@ -11,17 +11,9 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
       `https://image.tmdb.org/t/p/w500${movie.poster_path}`) ||
     fallbackImage;
 
-  const cast =
-    movie?.credits?.cast?.length > 0
-      ? movie.credits.cast
-          .slice(0, 3)
-          .map((actor) => actor.name)
-          .join(", ")
-      : "N/A";
+  const cast = movie?.cast || "N/A";
 
-  const director =
-    movie?.credits?.crew?.find((person) => person.job === "Director")?.name ||
-    "N/A";
+  const director = movie?.director || "N/A";
 
   const genres = movie?.genres || "N/A";
 
@@ -48,7 +40,15 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
   if (!isOpen || !movie) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
+      onClick={(e) => {
+        // Close only if clicked directly on the backdrop
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div className="relative bg-neutral-900 rounded-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
         {/* Close button */}
         <button
@@ -82,6 +82,12 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
               <button className="flex items-center gap-2 bg-neutral-600 bg-opacity-70 text-white px-6 py-2 rounded-md font-semibold hover:bg-opacity-90 transition-colors">
                 <span className="text-lg">+</span>
                 My List
+              </button>
+              <button className="p-2 border-2 border-gray-400 rounded-full hover:border-white transition-colors">
+                <span className="text-white text-lg">👍</span>
+              </button>
+              <button className="p-2 border-2 border-gray-400 rounded-full hover:border-white transition-colors">
+                <span className="text-white text-lg">👎</span>
               </button>
             </div>
           </div>
@@ -131,7 +137,7 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
           </div>
 
           {/* More like this — static for now */}
-          <div className="mt-8">
+          {/* <div className="mt-8">
             <h3 className="text-xl font-semibold mb-4">More Like This</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {[1, 2, 3].map((item) => (
@@ -151,7 +157,7 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
