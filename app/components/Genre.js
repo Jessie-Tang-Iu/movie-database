@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect, use } from "react";
 import MovieRow from "./MovieRow";
-import { TMDB_API_KEY } from "../_utils/thekey";
+import { SIMKL_KEY } from "../_utils/thekey";
 
-const clientID = TMDB_API_KEY;
+const clientID = SIMKL_KEY;
 
 export default function Genre({ genre, onMovieClick }) {
   const [movieList, setMovieList] = useState([]);
