@@ -1,19 +1,24 @@
 "use client";
 import { useState, useEffect } from "react";
 
-export default function MovieModal({ movie, isOpen, onClose }) {
+export default function MovieModal2({ movie, isOpen, onClose }) {
   const [imageError, setImageError] = useState(false);
   const fallbackImage = "/fallback2.png";
 
-  const movieTitle =
-    typeof movie?.title === "string"
-      ? movie.title
-      : movie?.title?.english ||
-        movie?.title?.romaji ||
-        movie?.title?.original ||
-        "Untitled";
+  const posterUrl =
+    (!imageError &&
+      movie?.poster_path &&
+      `https://image.tmdb.org/t/p/w500${movie.poster_path}`) ||
+    fallbackImage;
 
-  // Close modal on escape key
+  const cast = movie?.cast || "N/A";
+
+  const director = movie?.director || "N/A";
+
+  const genres = movie?.genres || "N/A";
+
+  const duration = movie?.runtime ? `${movie.runtime} min` : "N/A";
+
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === "Escape") onClose();
@@ -34,11 +39,16 @@ export default function MovieModal({ movie, isOpen, onClose }) {
 
   if (!isOpen || !movie) return null;
 
-  const posterUrl =
-    (!imageError && (movie?.poster?.url || movie?.posterWUrl)) || fallbackImage;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
+      onClick={(e) => {
+        // Close only if clicked directly on the backdrop
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div className="relative bg-neutral-900 rounded-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
         {/* Close button */}
         <button
@@ -48,23 +58,22 @@ export default function MovieModal({ movie, isOpen, onClose }) {
           <span className="text-white text-xl font-bold">✕</span>
         </button>
 
-        {/* Hero section with image */}
+        {/* Poster image */}
         <div className="relative h-96 overflow-hidden">
           <img
             src={posterUrl}
-            alt={movieTitle}
+            alt={movie.title}
             onError={() => setImageError(true)}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-transparent to-transparent" />
 
-          {/* Movie title and controls overlay */}
+          {/* Overlay title and actions */}
           <div className="absolute bottom-6 left-6 right-6">
             <h2 className="text-4xl font-bold text-white mb-4 drop-shadow-lg">
-              {movieTitle}
+              {movie.title}
             </h2>
 
-            {/* Action buttons */}
             <div className="flex gap-3 mb-4">
               <button className="flex items-center gap-2 bg-white text-black px-6 py-2 rounded-md font-semibold hover:bg-gray-200 transition-colors">
                 <span className="text-lg">▶</span>
@@ -84,63 +93,51 @@ export default function MovieModal({ movie, isOpen, onClose }) {
           </div>
         </div>
 
-        {/* Content section */}
+        {/* Movie content */}
         <div className="p-6 text-white">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Main content */}
+            {/* Left side */}
             <div className="md:col-span-2">
-              <div className="flex items-center gap-4 mb-4 text-sm">
-                <span className="text-green-400 font-semibold">98% Match</span>
-                <span className="border border-gray-400 px-1 text-gray-400">
-                  HD
-                </span>
-                <span className="text-gray-300">{movie?.year}</span>
-                <span className="border border-gray-400 px-1 text-gray-400">
-                  13+
-                </span>
+              <div className="flex items-center gap-4 mb-4 text-sm text-gray-300">
+                <span className="text-green-400 font-semibold">TMDB</span>
+                {movie.release_date && (
+                  <span>{movie.release_date.slice(0, 4)}</span>
+                )}
+                {movie.vote_average && (
+                  <span className="border border-gray-400 px-1">
+                    {movie.vote_average.toFixed(1)} ★
+                  </span>
+                )}
               </div>
 
               <p className="text-white mb-4 leading-relaxed">
-                {movie?.description ||
-                  "A thrilling adventure that takes you on an unforgettable journey through compelling characters and stunning visuals. Experience the story that captivated audiences worldwide with its unique blend of drama, action, and heart."}
+                {movie.overview || "No description available."}
               </p>
             </div>
 
-            {/* Side content */}
+            {/* Right side */}
             <div className="space-y-4 text-sm">
               <div>
                 <span className="text-gray-400">Cast: </span>
-                <span className="text-white">
-                  {movie?.cast ||
-                    "John Doe, Jane Smith, Mike Johnson, Sarah Wilson"}
-                </span>
+                <span className="text-white">{cast}</span>
               </div>
-
               <div>
                 <span className="text-gray-400">Genres: </span>
-                <span className="text-white">
-                  {movie?.genres || "Drama, Action, Thriller"}
-                </span>
+                <span className="text-white">{genres}</span>
               </div>
-
               <div>
                 <span className="text-gray-400">Director: </span>
-                <span className="text-white">
-                  {movie?.director || "Christopher Nolan"}
-                </span>
+                <span className="text-white">{director}</span>
               </div>
-
-              {movie?.duration && (
-                <div>
-                  <span className="text-gray-400">Duration: </span>
-                  <span className="text-white">{movie.duration}</span>
-                </div>
-              )}
+              <div>
+                <span className="text-gray-400">Duration: </span>
+                <span className="text-white">{duration}</span>
+              </div>
             </div>
           </div>
 
-          {/* More Like This section */}
-          <div className="mt-8">
+          {/* More like this — static for now */}
+          {/* <div className="mt-8">
             <h3 className="text-xl font-semibold mb-4">More Like This</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {[1, 2, 3].map((item) => (
@@ -149,20 +146,18 @@ export default function MovieModal({ movie, isOpen, onClose }) {
                   className="bg-neutral-800 rounded-lg overflow-hidden hover:bg-neutral-700 transition-colors cursor-pointer"
                 >
                   <div className="h-32 bg-neutral-700 flex items-center justify-center">
-                    <span className="text-gray-400">Similar Movie {item}</span>
+                    <span className="text-gray-400">Related Movie {item}</span>
                   </div>
                   <div className="p-3">
-                    <h4 className="font-semibold text-sm">
-                      Related Title {item}
-                    </h4>
+                    <h4 className="font-semibold text-sm">Title {item}</h4>
                     <p className="text-xs text-gray-400 mt-1">
-                      Brief description of this related content...
+                      Description of related movie...
                     </p>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
