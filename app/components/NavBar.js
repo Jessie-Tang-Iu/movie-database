@@ -41,6 +41,18 @@ export default function NavBar({ onSearch }) {
           >
             Test
           </Link>
+          <Link
+            href="/MyList"
+            className="hover:text-cyan-400 transition-colors"
+          >
+            My List
+          </Link>
+          <Link
+            href="/add-to-my-list"
+            className="hover:text-cyan-400 transition-colors"
+          >
+            Add to My List (For Test)
+          </Link>
         </div>
 
         {/* Right side: search + logout */}
