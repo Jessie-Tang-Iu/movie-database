@@ -35,24 +35,24 @@ export default function NavBar({ onSearch }) {
           {/* <Link href="/tv" className="hover:text-cyan-400 transition-colors">
             TV Shows
           </Link> */}
-          <Link
+          {/* <Link
             href="/test-fetch"
             className="hover:text-cyan-400 transition-colors"
           >
             Test
-          </Link>
+          </Link> */}
           <Link
             href="/MyList"
             className="hover:text-cyan-400 transition-colors"
           >
             My List
           </Link>
-          <Link
+          {/* <Link
             href="/add-to-my-list"
             className="hover:text-cyan-400 transition-colors"
           >
             Add to My List (For Test)
-          </Link>
+          </Link> */}
         </div>
 
         {/* Right side: search + logout */}
