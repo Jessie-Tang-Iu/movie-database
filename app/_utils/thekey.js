@@ -1,6 +1,6 @@
 // bad idea: apiKey.js
 export const SIMKL_KEY =
-  "47b37d3f5ce2dcbe892db8c02441a951d06716c5ea30e5f2457b1cd57f2e708a";
+  "637397882bce97dc00d38f79c3d19c443b5edaded0448c9bc0bbebc879d1124a";
 
 export const TMDB_API_KEY = "0892d817b06593c021f79693fbff9e78";
 

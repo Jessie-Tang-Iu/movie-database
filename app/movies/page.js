@@ -3,11 +3,10 @@
 import { useState } from "react";
 import Library from "../components/Library";
 import Genre from "../components/Genre";
-import MovieRow from "../components/MovieRow";
 import NavBar from "../components/NavBar";
-import Banner from "../components/Banner";
 import MovieModal2 from "../components/MovieModel_TMBD";
 import { TMDB_API_KEY, SIMKL_KEY } from "../_utils/thekey";
+import { useUserAuth } from "../_utils/auth-context";
 
 export default function Page() {
   const tmdbKey = TMDB_API_KEY;
@@ -28,6 +27,7 @@ export default function Page() {
         )}&api_key=${tmdbKey}`
       );
       const searchData = await searchRes.json();
+      // console.dir(searchData);
       const tmdbMatch = searchData.results?.[0];
 
       if (!tmdbMatch?.id) {
@@ -40,11 +40,13 @@ export default function Page() {
         `https://api.themoviedb.org/3/movie/${tmdbMatch.id}?api_key=${tmdbKey}&language=en-US`
       );
       const details = await detailsRes.json();
+      console.dir(details);
 
       const creditsRes = await fetch(
         `https://api.themoviedb.org/3/movie/${tmdbMatch.id}/credits?api_key=${tmdbKey}`
       );
       const credits = await creditsRes.json();
+      console.dir(credits);
 
       const enrichedMovie = {
         title: tmdbMatch.title || movie.title,
@@ -65,6 +67,7 @@ export default function Page() {
         backdrop_path: tmdbMatch.backdrop_path,
         release_date: tmdbMatch.release_date,
         vote_average: tmdbMatch.vote_average,
+        posterWUrl: movie.posterWUrl || `https://image.tmdb.org/t/p/w500${tmdbMatch.poster_path}`,
       };
 
       setSelectedMovie(enrichedMovie);
