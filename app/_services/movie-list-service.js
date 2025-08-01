@@ -1,4 +1,4 @@
-import { addDoc, collection, getDocs, query } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, query } from "firebase/firestore";
 import { db } from "../_utils/firebase";
 
 
@@ -26,6 +26,17 @@ export async function dbAddMovieItem(userId, itemObj) {
         const newItemReference = collection(db, "users", userId, "myList");
         const newItemPromise = await addDoc(newItemReference, itemObj);
         console.log(newItemPromise.id);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function dbRemoveMovieItem(userId, item) {
+    try {
+        const removeItemReference = doc(db, "users", userId, "myList", item.id);
+        console.log(removeItemReference);
+        await deleteDoc(removeItemReference);
+        console.log("Deleted:",item.id);
     } catch (error) {
         console.log(error);
     }

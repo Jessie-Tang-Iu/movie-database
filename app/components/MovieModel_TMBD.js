@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { dbAddMovieItem } from "../_services/movie-list-service";
+import { dbAddMovieItem, dbGetAllMovieList, dbRemoveMovieItem } from "../_services/movie-list-service";
 import { useUserAuth } from "../_utils/auth-context";
 
 export default function MovieModal2({ movie, isOpen, onClose }) {
@@ -53,8 +53,20 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
     setIsAdded(true);
     // console.dir(myMovie);
     userMovieList.push(myMovie);
-    dbAddMovieItem(user.uid, myMovie);
+    await dbAddMovieItem(user.uid, myMovie);
   };
+
+  const handleRemoveFromMyList = async (e) => {
+    e.preventDefault();
+    let itemToRemove = movie;
+    console.log(itemToRemove.id);
+    setIsAdded(false);
+    await dbRemoveMovieItem(user.uid, itemToRemove);
+    const index = userMovieList.findIndex(m => m.id === movie.id);
+    if (index !== -1) {
+      userMovieList.splice(index, 1);
+    }
+  }
 
   return (
     <div
@@ -97,7 +109,10 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
                 Play
               </button>
               {isAdded ? (
-                <button className="flex items-center gap-2 bg-red-500 bg-opacity-70 text-white px-6 py-2 rounded-md font-semibold hover:bg-opacity-90 transition-colors">
+                <button 
+                  className="flex items-center gap-2 bg-red-500 bg-opacity-70 text-white px-6 py-2 rounded-md font-semibold hover:bg-opacity-90 transition-colors"
+                  onClick={handleRemoveFromMyList}
+                >
                   <span className="text-lg">✓</span>
                   My List
                 </button>
