@@ -17,7 +17,7 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
 
   const genres = movie?.genres || "N/A";
 
-  const duration = movie?.runtime ? `${movie.runtime} min` : "N/A";
+  const duration = movie?.runtime ? `${movie.runtime}` : "N/A";
 
   useEffect(() => {
     const handleEscape = (e) => {

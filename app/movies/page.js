@@ -28,6 +28,7 @@ export default function Page() {
         )}&api_key=${tmdbKey}`
       );
       const searchData = await searchRes.json();
+      // console.dir(searchData);
       const tmdbMatch = searchData.results?.[0];
 
       if (!tmdbMatch?.id) {
@@ -40,11 +41,13 @@ export default function Page() {
         `https://api.themoviedb.org/3/movie/${tmdbMatch.id}?api_key=${tmdbKey}&language=en-US`
       );
       const details = await detailsRes.json();
+      console.dir(details);
 
       const creditsRes = await fetch(
         `https://api.themoviedb.org/3/movie/${tmdbMatch.id}/credits?api_key=${tmdbKey}`
       );
       const credits = await creditsRes.json();
+      console.dir(credits);
 
       const enrichedMovie = {
         title: tmdbMatch.title || movie.title,
