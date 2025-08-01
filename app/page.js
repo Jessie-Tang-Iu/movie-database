@@ -22,6 +22,8 @@ export default function Home() {
     }
   }
 
+  console.dir(user);
+
   return (
     <main className="min-h-screen bg-black text-white flex items-center justify-center px-6">
       <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 border border-neutral-700 rounded-xl shadow-2xl p-10 w-full max-w-lg">
