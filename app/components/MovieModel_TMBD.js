@@ -1,7 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
+import { dbAddMovieItem } from "../_services/movie-list-service";
+import { useUserAuth } from "../_utils/auth-context";
 
 export default function MovieModal2({ movie, isOpen, onClose }) {
+  const {user} = useUserAuth();
   const [imageError, setImageError] = useState(false);
   const fallbackImage = "/fallback2.png";
 
@@ -20,6 +23,7 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
   const duration = movie?.runtime ? `${movie.runtime}` : "N/A";
 
   useEffect(() => {
+    console.dir(movie);
     const handleEscape = (e) => {
       if (e.key === "Escape") onClose();
     };
@@ -38,6 +42,13 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
   }, [isOpen, onClose]);
 
   if (!isOpen || !movie) return null;
+
+  const handleAddList = async (e) => {
+    e.preventDefault();
+    let myMovie = movie;
+    console.dir(myMovie);
+    dbAddMovieItem(user.uid, myMovie);
+  };
 
   return (
     <div
@@ -79,7 +90,10 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
                 <span className="text-lg">▶</span>
                 Play
               </button>
-              <button className="flex items-center gap-2 bg-neutral-600 bg-opacity-70 text-white px-6 py-2 rounded-md font-semibold hover:bg-opacity-90 transition-colors">
+              <button 
+                className="flex items-center gap-2 bg-neutral-600 bg-opacity-70 text-white px-6 py-2 rounded-md font-semibold hover:bg-opacity-90 transition-colors"
+                onClick={handleAddList}
+              >
                 <span className="text-lg">+</span>
                 My List
               </button>
