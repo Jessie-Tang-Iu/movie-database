@@ -12,8 +12,6 @@ export default function Page() {
   const tmdbKey = TMDB_API_KEY;
   const simklKey = SIMKL_KEY;
 
-  const {userMovieList} = useUserAuth();
-
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchResults, setSearchResults] = useState([]);

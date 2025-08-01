@@ -13,9 +13,8 @@ export default function MyList() {
     const tmdbKey = TMDB_API_KEY;
     const simklKey = SIMKL_KEY;
 
-    const { user, userMovieList } = useUserAuth();
+    const { userMovieList } = useUserAuth();
 
-    const [myMovieList, setMyMovieList] = useState([]);
     const [selectedMovie, setSelectedMovie] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -120,15 +119,8 @@ export default function MyList() {
         }
     };
 
-    // useEffect( () => {
-    //     if(user) {
-    //         dbGetAllMovieList(user.uid, setMyMovieList);
-    //     }
-    // }, [user] );
-
     // console.log("My List for", user.displayName);
     
-    // console.log(myMovieList);
     
     return(      
         <main className="bg-black text-white min-h-screen">

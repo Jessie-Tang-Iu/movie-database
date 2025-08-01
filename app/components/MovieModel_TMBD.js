@@ -5,7 +5,7 @@ import { useUserAuth } from "../_utils/auth-context";
 
 export default function MovieModal2({ movie, isOpen, onClose }) {
   const {user, userMovieList} = useUserAuth();
-  const [favorite, setFavorite] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const fallbackImage = "/fallback2.png";
 
@@ -31,11 +31,11 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
 
     if (isOpen) {
       const foundMovie = userMovieList.find(m => m.title == movie.title);
-      if (foundMovie) setFavorite(true);
+      if (foundMovie) setIsAdded(true);
       document.addEventListener("keydown", handleEscape);
       document.body.style.overflow = "hidden";
     } else {
-      setFavorite(false);
+      setIsAdded(false);
       document.body.style.overflow = "unset";
     }
 
@@ -50,8 +50,8 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
   const handleAddList = async (e) => {
     e.preventDefault();
     let myMovie = movie;
-    setFavorite(true);
-    console.dir(myMovie);
+    setIsAdded(true);
+    // console.dir(myMovie);
     userMovieList.push(myMovie);
     dbAddMovieItem(user.uid, myMovie);
   };
@@ -96,7 +96,7 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
                 <span className="text-lg">▶</span>
                 Play
               </button>
-              {favorite ? (
+              {isAdded ? (
                 <button className="flex items-center gap-2 bg-red-500 bg-opacity-70 text-white px-6 py-2 rounded-md font-semibold hover:bg-opacity-90 transition-colors">
                   <span className="text-lg">✓</span>
                   My List
