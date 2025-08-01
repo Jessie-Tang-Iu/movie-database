@@ -4,7 +4,7 @@ import { dbAddMovieItem, dbGetAllMovieList, dbRemoveMovieItem } from "../_servic
 import { useUserAuth } from "../_utils/auth-context";
 
 export default function MovieModal2({ movie, isOpen, onClose }) {
-  const {user, userMovieList} = useUserAuth();
+  const {user, userMovieList, setUserMovieList} = useUserAuth();
   const [isAdded, setIsAdded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const fallbackImage = "/fallback2.png";
@@ -31,10 +31,12 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
 
     if (isOpen) {
       const foundMovie = userMovieList.find(m => m.title == movie.title);
+      console.log(userMovieList);
       if (foundMovie) setIsAdded(true);
       document.addEventListener("keydown", handleEscape);
       document.body.style.overflow = "hidden";
-    } else {
+    } 
+    else {
       setIsAdded(false);
       document.body.style.overflow = "unset";
     }
@@ -43,7 +45,7 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
       document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "unset";
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, userMovieList, movie]);
 
   if (!isOpen || !movie) return null;
 
@@ -54,18 +56,22 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
     // console.dir(myMovie);
     userMovieList.push(myMovie);
     await dbAddMovieItem(user.uid, myMovie);
+    setUserMovieList(userMovieList);
+    await dbGetAllMovieList(user.uid, setUserMovieList);
+    console.log(userMovieList);
   };
 
   const handleRemoveFromMyList = async (e) => {
     e.preventDefault();
-    let itemToRemove = movie;
+    let itemToRemove = userMovieList.find(m => m.title == movie.title);
+    console.log("Movie Id:", movie.id)
     console.log(itemToRemove.id);
-    setIsAdded(false);
     await dbRemoveMovieItem(user.uid, itemToRemove);
-    const index = userMovieList.findIndex(m => m.id === movie.id);
-    if (index !== -1) {
-      userMovieList.splice(index, 1);
-    }
+    const updatedList = userMovieList.filter((m) => m.id !== movie.id);
+    setUserMovieList(updatedList);
+    await dbGetAllMovieList(user.uid, setUserMovieList);
+    setIsAdded(false);
+    console.log("Is Added",isAdded);
   }
 
   return (
