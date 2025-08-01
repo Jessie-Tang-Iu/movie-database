@@ -4,7 +4,8 @@ import { dbAddMovieItem } from "../_services/movie-list-service";
 import { useUserAuth } from "../_utils/auth-context";
 
 export default function MovieModal2({ movie, isOpen, onClose }) {
-  const {user} = useUserAuth();
+  const {user, userMovieList} = useUserAuth();
+  const [favorite, setFavorite] = useState(false);
   const [imageError, setImageError] = useState(false);
   const fallbackImage = "/fallback2.png";
 
@@ -23,15 +24,18 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
   const duration = movie?.runtime ? `${movie.runtime}` : "N/A";
 
   useEffect(() => {
-    console.dir(movie);
+
     const handleEscape = (e) => {
       if (e.key === "Escape") onClose();
     };
 
     if (isOpen) {
+      const foundMovie = userMovieList.find(m => m.title == movie.title);
+      if (foundMovie) setFavorite(true);
       document.addEventListener("keydown", handleEscape);
       document.body.style.overflow = "hidden";
     } else {
+      setFavorite(false);
       document.body.style.overflow = "unset";
     }
 
@@ -46,7 +50,9 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
   const handleAddList = async (e) => {
     e.preventDefault();
     let myMovie = movie;
+    setFavorite(true);
     console.dir(myMovie);
+    userMovieList.push(myMovie);
     dbAddMovieItem(user.uid, myMovie);
   };
 
@@ -90,13 +96,21 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
                 <span className="text-lg">▶</span>
                 Play
               </button>
-              <button 
-                className="flex items-center gap-2 bg-neutral-600 bg-opacity-70 text-white px-6 py-2 rounded-md font-semibold hover:bg-opacity-90 transition-colors"
-                onClick={handleAddList}
-              >
-                <span className="text-lg">+</span>
-                My List
-              </button>
+              {favorite ? (
+                <button className="flex items-center gap-2 bg-red-500 bg-opacity-70 text-white px-6 py-2 rounded-md font-semibold hover:bg-opacity-90 transition-colors">
+                  <span className="text-lg">✓</span>
+                  My List
+                </button>
+              ):(
+                <button 
+                  className="flex items-center gap-2 bg-neutral-600 bg-opacity-70 text-white px-6 py-2 rounded-md font-semibold hover:bg-opacity-90 transition-colors"
+                  onClick={handleAddList}
+                >
+                  <span className="text-lg">+</span>
+                  My List
+                </button>
+              )}
+              
               <button className="p-2 border-2 border-gray-400 rounded-full hover:border-white transition-colors">
                 <span className="text-white text-lg">👍</span>
               </button>

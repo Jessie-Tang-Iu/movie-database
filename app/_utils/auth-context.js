@@ -8,11 +8,13 @@ import {
   GoogleAuthProvider,
 } from "firebase/auth";
 import { auth } from "./firebase";
+import { dbGetAllMovieList } from "../_services/movie-list-service";
  
 const AuthContext = createContext();
  
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [userMovieList, setUserMovieList] = useState([]);
  
   const googleSignIn = () => {
     const provider = new GoogleAuthProvider();
@@ -27,11 +29,14 @@ export const AuthContextProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
+    if(user) {
+      dbGetAllMovieList(user.uid, setUserMovieList);
+    }
     return () => unsubscribe();
   }, [user]);
  
   return (
-    <AuthContext.Provider value={{ user, googleSignIn, firebaseSignOut }}>
+    <AuthContext.Provider value={{ user, userMovieList, googleSignIn, firebaseSignOut }}>
       {children}
     </AuthContext.Provider>
   );
