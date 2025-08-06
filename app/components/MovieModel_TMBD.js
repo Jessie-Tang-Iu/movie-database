@@ -11,11 +11,23 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
   const [shouldRender, setShouldRender] = useState(false);
   const fallbackImage = "/fallback2.png";
 
-  const posterUrl =
-    (!imageError &&
-      movie?.poster_path &&
-      `https://image.tmdb.org/t/p/w500${movie.poster_path}`) ||
-    fallbackImage;
+  const posterUrl = (() => {
+    if (imageError) return fallbackImage;
+    
+    // Try multiple poster URL sources in order of preference
+    if (movie?.poster_path) {
+      return `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+    }
+    if (movie?.posterWUrl) {
+      return movie.posterWUrl;
+    }
+    if (movie?.posterMUrl) {
+      return movie.posterMUrl;
+    }
+    
+    console.log("No valid poster URL found for movie:", movie);
+    return fallbackImage;
+  })();
 
   const cast = movie?.cast || "N/A";
   const director = movie?.director || "N/A";
@@ -43,9 +55,22 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
     };
 
     if (isOpen) {
-      const foundMovie = userMovieList.find(m => m.title == movie.title);
-      console.log(userMovieList);
-      if (foundMovie) setIsAdded(true);
+      // Check if movie is already in list with more flexible matching
+      const foundMovie = userMovieList.find(m => {
+        // Try multiple matching criteria
+        return (
+          m.title === movie?.title ||
+          (m.tmdbId && m.tmdbId === movie?.id) ||
+          (m.id && m.id === movie?.id)
+        );
+      });
+      
+      console.log("Checking if movie is in list:");
+      console.log("Current movie:", movie);
+      console.log("Found in list:", foundMovie);
+      console.log("Full user list:", userMovieList);
+      
+      setIsAdded(!!foundMovie);
       document.addEventListener("keydown", handleEscape);
       document.body.style.overflow = "hidden";
     } 
@@ -64,26 +89,75 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
 
   const handleAddList = async (e) => {
     e.preventDefault();
-    let myMovie = movie;
+    let myMovie = {
+      ...movie,
+      tmdbId: movie.id, // Store TMDB ID separately
+      dateAdded: new Date().toISOString()
+    };
+    
     setIsAdded(true);
-    userMovieList.push(myMovie);
-    await dbAddMovieItem(user.uid, myMovie);
-    setUserMovieList(userMovieList);
-    await dbGetAllMovieList(user.uid, setUserMovieList);
-    console.log(userMovieList);
+    
+    try {
+      await dbAddMovieItem(user.uid, myMovie);
+      // Refresh the user movie list to get the Firebase document ID
+      await dbGetAllMovieList(user.uid, setUserMovieList);
+      console.log("Movie added successfully");
+    } catch (error) {
+      console.error("Error adding movie:", error);
+      setIsAdded(false); // Revert on error
+    }
   };
 
   const handleRemoveFromMyList = async (e) => {
     e.preventDefault();
-    let itemToRemove = userMovieList.find(m => m.title == movie.title);
-    console.log("Movie Id:", movie.id)
-    console.log(itemToRemove.id);
-    await dbRemoveMovieItem(user.uid, itemToRemove);
-    const updatedList = userMovieList.filter((m) => m.id !== movie.id);
-    setUserMovieList(updatedList);
-    await dbGetAllMovieList(user.uid, setUserMovieList);
-    setIsAdded(false);
-    console.log("Is Added",isAdded);
+    
+    console.log("=== REMOVE MOVIE DEBUG ===");
+    console.log("Current movie to remove:", movie);
+    console.log("Current user movie list:", userMovieList);
+    
+    // Find the movie in the user's list
+    let itemToRemove = userMovieList.find(m => {
+      const titleMatch = m.title === movie.title;
+      const tmdbMatch = m.tmdbId && m.tmdbId === movie.id;
+      
+      console.log(`Checking movie: ${m.title}`);
+      console.log(`- Title match: ${titleMatch}`);
+      console.log(`- TMDB match: ${tmdbMatch} (${m.tmdbId} vs ${movie.id})`);
+      console.log(`- Firebase ID: ${m.id}`);
+      console.log(`- Firebase ID (backup): ${m.firebaseId}`);
+      
+      return titleMatch || tmdbMatch;
+    });
+    
+    console.log("Item found for removal:", itemToRemove);
+    
+    if (itemToRemove) {
+      try {
+        console.log("Attempting to remove from Firebase...");
+        await dbRemoveMovieItem(user.uid, itemToRemove);
+        console.log("Successfully removed from Firebase");
+        
+        // Refresh the entire list from Firebase
+        console.log("Refreshing movie list from Firebase...");
+        await dbGetAllMovieList(user.uid, setUserMovieList);
+        setIsAdded(false);
+        console.log("Movie removal complete and list refreshed");
+      } catch (error) {
+        console.error("Error removing movie:", error);
+        // Don't change isAdded state if removal failed
+      }
+    } else {
+      console.warn("Movie not found in user list for removal");
+      console.log("Available movies in list:");
+      userMovieList.forEach((m, idx) => {
+        console.log(`${idx}: "${m.title}"`);
+        console.log(`  - Firebase ID: ${m.id}`);
+        console.log(`  - Firebase ID (backup): ${m.firebaseId}`);
+        console.log(`  - TMDB ID: ${m.tmdbId}`);
+      });
+    }
+    
+    console.log("=== END REMOVE DEBUG ===");
   }
 
   return (

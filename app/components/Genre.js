@@ -1,71 +1,81 @@
 "use client";
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import MovieRow from "./MovieRow";
-import { SIMKL_KEY } from "../_utils/thekey";
+import { TMDB_API_KEY } from "../_utils/thekey";
 
-const clientID = SIMKL_KEY;
+const tmdbKey = TMDB_API_KEY;
+
+// TMDB Genre IDs mapping
+const genreMap = {
+  "Action": 28,
+  "Adventure": 12,
+  "Animation": 16,
+  "Comedy": 35,
+  "Crime": 80,
+  "Documentary": 99,
+  "Drama": 18,
+  "Family": 10751,
+  "Fantasy": 14,
+  "History": 36,
+  "Horror": 27,
+  "Music": 10402,
+  "Mystery": 9648,
+  "Romance": 10749,
+  "Science Fiction": 878,
+  "TV Movie": 10770,
+  "Thriller": 53,
+  "War": 10752,
+  "Western": 37
+};
 
 export default function Genre({ genre, onMovieClick }) {
   const [movieList, setMovieList] = useState([]);
-  const [movieIds, setMovieIds] = useState([]);
-  const [posterIds, setPosterIds] = useState([]);
-  const [durationList, setDurationList] = useState([]);
 
   async function getListOfMoviesByGenre(genre) {
     try {
-      const response = await fetch(
-        `https://api.simkl.com/movies/genres/${genre}/type/country/this-year/popular-this-month?client_id=${clientID}`
-      );
-      if (!response.ok) console.log(response.status);
-      const data = await response.json();
-      if (data != null) {
-        let idArray = data.map((movie) => movie.ids.simkl_id);
-        setMovieIds(idArray.slice(0, 2));
-        let posterArray = data.map((movie) => movie.poster);
-        setPosterIds(posterArray.slice(0, 2));
-        let durationArray = data.map((movie) => movie.runtime);
-        setDurationList(durationArray.slice(0, 2));
+      const genreId = genreMap[genre];
+      if (!genreId) {
+        console.log("Genre not found:", genre);
+        return;
       }
-    } catch (error) {
-      console.log("Error fetching library data:", error);
-    }
-  }
 
-  async function getMovieById(id) {
-    try {
-      const response = await fetch(
-        `https://api.simkl.com/movies/${id}?client_id=${clientID}`
-      );
-      if (!response.ok) console.log(response.status);
-      const movieData = await response.json();
-      return movieData;
+      const url = `https://api.themoviedb.org/3/discover/movie?api_key=${tmdbKey}&with_genres=${genreId}&sort_by=popularity.desc&page=1`;
+      
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.log("TMDB API error:", response.status);
+        return;
+      }
+      
+      const data = await response.json();
+      
+      // Transform TMDB data to match your existing structure
+      const transformedMovies = data.results.slice(0, 10).map(movie => ({
+        id: movie.id,
+        title: movie.title,
+        overview: movie.overview,
+        release_date: movie.release_date,
+        vote_average: movie.vote_average,
+        poster_path: movie.poster_path,
+        backdrop_path: movie.backdrop_path,
+        posterWUrl: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
+        posterMUrl: movie.poster_path ? `https://image.tmdb.org/t/p/w342${movie.poster_path}` : null,
+        // Add placeholders - will be fetched when modal opens
+        runtime: null,
+        genres: null,
+        cast: null,
+        director: null
+      }));
+      
+      setMovieList(transformedMovies);
     } catch (error) {
-      console.log("Error fetching movie by ID:", error);
+      console.log("Error fetching genre movies:", error);
     }
   }
 
   useEffect(() => {
     getListOfMoviesByGenre(genre);
-  }, []);
-
-  useEffect(() => {
-    async function fetchMovies() {
-      if (movieIds.length > 0) {
-        let thisMovies = [];
-        for (let i = 0; i < movieIds.length; i++) {
-          let movie = await getMovieById(movieIds[i]);
-          movie.id = movieIds[i];
-          movie.duration = durationList[i];
-          movie.posterMUrl = `https://wsrv.nl/?url=https://simkl.in/posters/${posterIds[i]}_m.jpg`;
-          movie.posterWUrl = `https://wsrv.nl/?url=https://simkl.in/posters/${posterIds[i]}_w.jpg`;
-          thisMovies.push(movie);
-        }
-        // console.dir(thisMovies);
-        setMovieList(thisMovies);
-      }
-    }
-    fetchMovies();
-  }, [movieIds]);
+  }, [genre]);
 
   return (
     <div>
