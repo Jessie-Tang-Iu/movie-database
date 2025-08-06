@@ -1,89 +1,69 @@
 "use client";
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import Banner from "./Banner";
 import MovieRow from "./MovieRow";
-import { SIMKL_KEY } from "../_utils/thekey";
+import { TMDB_API_KEY } from "../_utils/thekey";
 
-const clientID = SIMKL_KEY;
+const tmdbKey = TMDB_API_KEY;
 
 export default function Library({ type, onMovieClick }) {
-  const [fetchUrl, setFetchUrl] = useState("");
   const [movieList, setMovieList] = useState([]);
-  const [movieIds, setMovieIds] = useState([]);
-  const [posterIds, setPosterIds] = useState([]);
-  const [durationList, setDurationList] = useState([]);
 
   async function getListOfMovies(type) {
     try {
-      // console.dir(fetchUrl);
-      const plResponse = await fetch(fetchUrl);
-      if (!plResponse.ok) console.log(plResponse.status);
-      const plData = await plResponse.json();
-      // console.dir(plData);
-      let idArray = plData.map((movie) => movie.ids.simkl_id);
-      setMovieIds(idArray.slice(0, 3));
-      let posterArray = plData.map((movie) => movie.poster);
-      setPosterIds(posterArray.slice(0, 3));
-      let durationArray = plData.map((movie) => movie.runtime);
-      setDurationList(durationArray.slice(0, 3));
+      let url = "";
+      
+      if (type === "Trending Now") {
+        url = `https://api.themoviedb.org/3/trending/movie/day?api_key=${tmdbKey}`;
+      } else if (type === "New Release") {
+        url = `https://api.themoviedb.org/3/movie/now_playing?api_key=${tmdbKey}&language=en-US&page=1`;
+      } else if (type === "Popular") {
+        url = `https://api.themoviedb.org/3/movie/popular?api_key=${tmdbKey}&language=en-US&page=1`;
+      } else if (type === "Top Rated") {
+        url = `https://api.themoviedb.org/3/movie/top_rated?api_key=${tmdbKey}&language=en-US&page=1`;
+      } else if (type === "Upcoming") {
+        url = `https://api.themoviedb.org/3/movie/upcoming?api_key=${tmdbKey}&language=en-US&page=1`;
+      }
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.log("TMDB API error:", response.status);
+        return;
+      }
+      
+      const data = await response.json();
+      
+      // Transform TMDB data to match your existing structure
+      const transformedMovies = data.results.slice(0, 12).map(movie => ({
+        id: movie.id,
+        title: movie.title,
+        overview: movie.overview,
+        release_date: movie.release_date,
+        vote_average: movie.vote_average,
+        poster_path: movie.poster_path,
+        backdrop_path: movie.backdrop_path,
+        posterWUrl: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
+        posterMUrl: movie.poster_path ? `https://image.tmdb.org/t/p/w342${movie.poster_path}` : null,
+        // Add runtime placeholder - will be fetched when modal opens
+        runtime: null,
+        genres: null,
+        cast: null,
+        director: null
+      }));
+      
+      setMovieList(transformedMovies);
     } catch (error) {
-      console.log("Error fetching library data:", error);
+      console.log("Error fetching TMDB data:", error);
     }
   }
 
-  async function getMovieById(id) {
-    try {
-      const response = await fetch(
-        `https://api.simkl.com/movies/${id}?client_id=${clientID}`
-      );
-      if (!response.ok) console.log(response.status);
-      const movieData = await response.json();
-      return movieData;
-    } catch (error) {
-      console.log("Error fetching movie by ID:", error);
-    }
-  }
-
   useEffect(() => {
-    function handleFetchUrl() {
-      if (type == "Trending Now") {
-        const url = `https://api.simkl.com/movies/trending/day?client_id=${clientID}`;
-        setFetchUrl(url);
-      } else if (type == "New Release") {
-        const url = `https://api.simkl.com/movies/genres/all/type/country/this-week/newest?client_id=${clientID}`;
-        setFetchUrl(url);
-      }
-    }
-    handleFetchUrl();
-  }, []);
-
-  useEffect(() => {
-    if (fetchUrl != "") {
-      getListOfMovies(type);
-    }
-  }, [fetchUrl]);
-
-  useEffect(() => {
-    async function fetchMovies() {
-      if (movieIds.length > 0) {
-        let thisMovies = [];
-        for (let i = 0; i < movieIds.length; i++) {
-          let movie = await getMovieById(movieIds[i]);
-          movie.id = movieIds[i];
-          movie.duration = durationList[i];
-          movie.posterMUrl = `https://wsrv.nl/?url=https://simkl.in/posters/${posterIds[i]}_m.jpg`;
-          movie.posterWUrl = `https://wsrv.nl/?url=https://simkl.in/posters/${posterIds[i]}_w.jpg`;
-          thisMovies.push(movie);
-        }
-        setMovieList(thisMovies);
-      }
-    }
-    fetchMovies();
-  }, [movieIds]);
+    getListOfMovies(type);
+  }, [type]);
 
   return (
     <div>
-      {type == "Trending Now" && <Banner movies={movieList} />}
+      {type === "Trending Now" && <Banner movies={movieList} />}
       <MovieRow title={type} movies={movieList} onMovieClick={onMovieClick} />
     </div>
   );
