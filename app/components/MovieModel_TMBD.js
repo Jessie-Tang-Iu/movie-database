@@ -1,10 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
-import { dbAddMovieItem, dbGetAllMovieList, dbRemoveMovieItem } from "../_services/movie-list-service";
+import {
+  dbAddMovieItem,
+  dbGetAllMovieList,
+  dbRemoveMovieItem,
+} from "../_services/movie-list-service";
 import { useUserAuth } from "../_utils/auth-context";
 
 export default function MovieModal2({ movie, isOpen, onClose }) {
-  const {user, userMovieList, setUserMovieList} = useUserAuth();
+  const { user, userMovieList, setUserMovieList } = useUserAuth();
   const [isAdded, setIsAdded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -43,13 +47,12 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
     };
 
     if (isOpen) {
-      const foundMovie = userMovieList.find(m => m.title == movie.title);
+      const foundMovie = userMovieList.find((m) => m.title == movie.title);
       console.log(userMovieList);
       if (foundMovie) setIsAdded(true);
       document.addEventListener("keydown", handleEscape);
       document.body.style.overflow = "hidden";
-    } 
-    else {
+    } else {
       setIsAdded(false);
       document.body.style.overflow = "unset";
     }
@@ -75,24 +78,26 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
 
   const handleRemoveFromMyList = async (e) => {
     e.preventDefault();
-    let itemToRemove = userMovieList.find(m => m.title == movie.title);
-    console.log("Movie Id:", movie.id)
+    let itemToRemove = userMovieList.find((m) => m.title == movie.title);
+    console.log("Movie Id:", movie.id);
     console.log(itemToRemove.id);
     await dbRemoveMovieItem(user.uid, itemToRemove);
     const updatedList = userMovieList.filter((m) => m.id !== movie.id);
     setUserMovieList(updatedList);
     await dbGetAllMovieList(user.uid, setUserMovieList);
     setIsAdded(false);
-    console.log("Is Added",isAdded);
-  }
+    console.log("Is Added", isAdded);
+  };
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
       style={{
-        backgroundColor: isAnimating ? 'rgba(0, 0, 0, 0.75)' : 'rgba(0, 0, 0, 0)',
-        backdropFilter: isAnimating ? 'blur(4px)' : 'blur(0px)',
-        transition: 'all 300ms ease-out'
+        backgroundColor: isAnimating
+          ? "rgba(0, 0, 0, 0.75)"
+          : "rgba(0, 0, 0, 0)",
+        backdropFilter: isAnimating ? "blur(4px)" : "blur(0px)",
+        transition: "all 300ms ease-out",
       }}
       onClick={(e) => {
         if (e.target === e.currentTarget) {
@@ -100,11 +105,11 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
         }
       }}
     >
-      <div 
+      <div
         className={`relative bg-neutral-900 rounded-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden shadow-2xl transition-all duration-300 ease-out transform ${
-          isAnimating 
-            ? 'opacity-100 scale-100 translate-y-0' 
-            : 'opacity-0 scale-95 translate-y-4'
+          isAnimating
+            ? "opacity-100 scale-100 translate-y-0"
+            : "opacity-0 scale-95 translate-y-4"
         }`}
       >
         {/* Close button */}
@@ -127,29 +132,37 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
 
           {/* Overlay title and actions */}
           <div className="absolute bottom-6 left-6 right-6">
-            <h2 className={`text-4xl font-bold text-white mb-4 drop-shadow-lg transition-all duration-500 delay-100 ${
-              isAnimating ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}>
+            <h2
+              className={`text-4xl font-bold text-white mb-4 drop-shadow-lg transition-all duration-500 delay-100 ${
+                isAnimating
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}
+            >
               {movie.title}
             </h2>
 
-            <div className={`flex gap-3 mb-4 transition-all duration-500 delay-200 ${
-              isAnimating ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}>
+            <div
+              className={`flex gap-3 mb-4 transition-all duration-500 delay-200 ${
+                isAnimating
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}
+            >
               <button className="flex items-center gap-2 bg-white text-black px-6 py-2 rounded-md font-semibold hover:bg-gray-200 transition-all duration-200 hover:scale-105">
                 <span className="text-lg">▶</span>
-                Play
+                Play (Currently unavailable)
               </button>
               {isAdded ? (
-                <button 
+                <button
                   className="flex items-center gap-2 bg-red-500 bg-opacity-70 text-white px-6 py-2 rounded-md font-semibold hover:bg-opacity-90 transition-all duration-200 hover:scale-105"
                   onClick={handleRemoveFromMyList}
                 >
                   <span className="text-lg">✓</span>
                   My List
                 </button>
-              ):(
-                <button 
+              ) : (
+                <button
                   className="flex items-center gap-2 bg-neutral-600 bg-opacity-70 text-white px-6 py-2 rounded-md font-semibold hover:bg-opacity-90 transition-all duration-200 hover:scale-105"
                   onClick={handleAddList}
                 >
@@ -157,21 +170,25 @@ export default function MovieModal2({ movie, isOpen, onClose }) {
                   My List
                 </button>
               )}
-              
-              <button className="p-2 border-2 border-gray-400 rounded-full hover:border-white transition-all duration-200 hover:scale-110">
+
+              {/* <button className="p-2 border-2 border-gray-400 rounded-full hover:border-white transition-all duration-200 hover:scale-110">
                 <span className="text-white text-lg">👍</span>
               </button>
               <button className="p-2 border-2 border-gray-400 rounded-full hover:border-white transition-all duration-200 hover:scale-110">
                 <span className="text-white text-lg">👎</span>
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
 
         {/* Movie content */}
-        <div className={`p-6 text-white transition-all duration-500 delay-300 ${
-          isAnimating ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-        }`}>
+        <div
+          className={`p-6 text-white transition-all duration-500 delay-300 ${
+            isAnimating
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4"
+          }`}
+        >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Left side */}
             <div className="md:col-span-2">

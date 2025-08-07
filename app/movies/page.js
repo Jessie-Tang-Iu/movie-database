@@ -8,6 +8,8 @@ import MovieModal2 from "../components/MovieModel_TMBD";
 import { TMDB_API_KEY, SIMKL_KEY } from "../_utils/thekey";
 import { useUserAuth } from "../_utils/auth-context";
 
+const genres = ["action", "comedy", "drama", "horror", "sci-fi"]; // Customize this list
+
 export default function Page() {
   const tmdbKey = TMDB_API_KEY;
   const simklKey = SIMKL_KEY;
@@ -67,7 +69,9 @@ export default function Page() {
         backdrop_path: tmdbMatch.backdrop_path,
         release_date: tmdbMatch.release_date,
         vote_average: tmdbMatch.vote_average,
-        posterWUrl: movie.posterWUrl || `https://image.tmdb.org/t/p/w500${tmdbMatch.poster_path}`,
+        posterWUrl:
+          movie.posterWUrl ||
+          `https://image.tmdb.org/t/p/w500${tmdbMatch.poster_path}`,
       };
 
       setSelectedMovie(enrichedMovie);
@@ -120,9 +124,9 @@ export default function Page() {
       <Library type="New Release" onMovieClick={handleMovieClick} />
 
       {/* Optional genres */}
-      {/* {genres.map((item) => (
+      {genres.map((item) => (
         <Genre key={item} genre={item} onMovieClick={handleMovieClick} />
-      ))} */}
+      ))}
 
       <MovieModal2
         movie={selectedMovie}
