@@ -36,7 +36,7 @@ export const AuthContextProvider = ({ children }) => {
   }, [user]);
  
   return (
-    <AuthContext.Provider value={{ user, userMovieList, googleSignIn, firebaseSignOut }}>
+    <AuthContext.Provider value={{ user, userMovieList, setUserMovieList, googleSignIn, firebaseSignOut }}>
       {children}
     </AuthContext.Provider>
   );
