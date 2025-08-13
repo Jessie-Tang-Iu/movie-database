@@ -10,7 +10,7 @@ export default function MovieRow({ title, movies, onMovieClick }) {
             <MovieCard
               key={index}
               title={movie.title}
-              posterUrl={movie.posterWUrl}
+              posterUrl={movie?.posterWUrl || `https://wsrv.nl/?url=https://simkl.in/posters/${movie.poster}_m.jpg`}
               movie={movie}
               onMovieClick={onMovieClick}
             />
