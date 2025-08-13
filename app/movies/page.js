@@ -118,7 +118,7 @@ export default function Page() {
 
   return (
     <div className="bg-black text-white min-h-screen">
-      <NavBar onSearch={handleSearch} />
+      <NavBar />
 
       <Library type="Trending Now" onMovieClick={handleMovieClick} />
       <Library type="New Release" onMovieClick={handleMovieClick} />

@@ -1,10 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 
 export default function SearchBar({
-  onSearch,
+  // onSearch,
   placeholder = "Search...",
   className = "",
 }) {
@@ -26,7 +27,7 @@ export default function SearchBar({
 
   const handleIconClick = () => {
     console.log("[SearchBar] 🔍 icon clicked, sending search:", inputValue);
-    onSearch?.(inputValue.trim());
+    // onSearch?.(inputValue.trim());
   };
 
   return (
@@ -47,8 +48,11 @@ export default function SearchBar({
         className="p-2 text-white hover:text-cyan-400 transition-colors"
         aria-label="Search"
       >
-        <FaSearch />
+        <Link href={`./${inputValue.trim()}`}>
+          <FaSearch />
+        </Link>
       </button>
+      
     </div>
   );
 }
