@@ -17,19 +17,21 @@ export default function MovieCard({ posterUrl = '', title = 'Movie Title', movie
 
   return (
     <div
-      className="relative flex-shrink-0 rounded-lg overflow-hidden bg-neutral-800 shadow hover:scale-105 transition-transform duration-300 cursor-pointer"
-      style={{ width: '250px', height: '140px' }}
-      onClick={handleClick}
+        className="relative flex-shrink-0 rounded-lg overflow-hidden bg-neutral-800 shadow hover:scale-105 transition-transform duration-300 cursor-pointer flex flex-col"
+        style={{ width: '250px' }}
+        onClick={handleClick}
     >
-      <img
-        src={imgSrc}
-        alt={title}
-        onError={() => setImgSrc(fallbackImage)}
-        className="w-full h-full object-cover"
-      />
-      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-white text-xs font-semibold drop-shadow">
-        {title}
-      </div>
+        <div style={{ height: '140px', width: '100%', overflow: 'hidden' }}>
+            <img
+                src={imgSrc}
+                alt={title}
+                onError={() => setImgSrc(fallbackImage)}
+                className="w-full h-full object-cover"
+            />
+        </div>
+        <div className="p-2 text-white text-center text-xs font-semibold">
+            {title}
+        </div>
     </div>
   );
 }

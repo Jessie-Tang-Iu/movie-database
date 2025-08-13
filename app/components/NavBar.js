@@ -7,7 +7,7 @@ import SearchBar from "./SearchBar";
 import { useState } from "react";
 import ConfirmDialog from "./ConfirmDialog";
 
-export default function NavBar({ onSearch }) {
+export default function NavBar() {
   const router = useRouter();
   const { user, firebaseSignOut } = useUserAuth();
   const [showConfirm, setShowConfirm] = useState(false);
@@ -57,7 +57,7 @@ export default function NavBar({ onSearch }) {
 
         {/* Right side: search + logout */}
         <div className="flex items-center space-x-4">
-          <SearchBar onSearch={onSearch} />
+          <SearchBar />
           {user && (
             <button
               onClick={() => setShowConfirm(true)}

@@ -1,19 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import Library from "../components/Library";
-import Genre from "../components/Genre";
+import { use, useEffect, useState } from "react";
 import NavBar from "../components/NavBar";
 import MovieModal2 from "../components/MovieModel_TMBD";
-import { TMDB_API_KEY } from "../_utils/thekey";
+import { TMDB_API_KEY, SIMKL_KEY } from "../_utils/thekey";
+import { useUserAuth } from "../_utils/auth-context";
+import MovieList from "../components/MovieList";
 
-const genres = ["action", "comedy", "drama", "horror", "sci-fi"]; // Customize this list
-
-export default function Page() {
+export default function SearchResultPage({ params }) {
   const tmdbKey = TMDB_API_KEY;
+  const simklKey = SIMKL_KEY;
 
+  const searchText = use(params);
+
+  const { user } = useUserAuth();
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+
 
   const handleMovieClick = async (movie) => {
     try {
@@ -83,17 +87,41 @@ export default function Page() {
     setSelectedMovie(null);
   };
 
+  useEffect(() => {
+    async function handleSearch(text) {
+      const query = text;
+      if (!query) return;
+
+      try {
+        const url = `https://api.simkl.com/search/movie?q=${query}&client_id=${simklKey}`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        const validResults = data
+          .map((entry) => entry?.movie || entry?.show || entry)
+          .filter((item) => item?.title);
+
+        if (validResults.length === 0) {
+          console.warn("No usable search results");
+          return;
+        }
+        setSearchResults(validResults);
+      } catch (err) {
+        console.error("Search failed:", err);
+      }
+    };
+    handleSearch(searchText.movie);
+  }, [user]);
+
   return (
     <div className="bg-black text-white min-h-screen">
       <NavBar />
 
-      <Library type="Trending Now" onMovieClick={handleMovieClick} />
-      <Library type="New Release" onMovieClick={handleMovieClick} />
-
-      {/* Optional genres */}
-      {genres.map((item) => (
-        <Genre key={item} genre={item} onMovieClick={handleMovieClick} />
-      ))}
+      <MovieList
+        title="Search Result"
+        movies={searchResults}
+        onMovieClick={handleMovieClick}
+      />
 
       <MovieModal2
         movie={selectedMovie}
