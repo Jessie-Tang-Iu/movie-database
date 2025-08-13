@@ -21,7 +21,7 @@ export default function SearchBar({
     console.log("[SearchBar] onKeyDown:", e.key);
     if (e.key === "Enter") {
       console.log("[SearchBar] Enter pressed, sending search:", inputValue);
-      onSearch?.(inputValue.trim());
+      // onSearch?.(inputValue.trim());
     }
   };
 

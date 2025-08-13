@@ -1,25 +1,21 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
-import Library from "../components/Library";
-import Genre from "../components/Genre";
 import NavBar from "../components/NavBar";
 import MovieModal2 from "../components/MovieModel_TMBD";
 import { TMDB_API_KEY, SIMKL_KEY } from "../_utils/thekey";
 import { useUserAuth } from "../_utils/auth-context";
-import MovieRow from "../components/MovieRow";
+import MovieList from "../components/MovieList";
 
 export default function SearchResultPage({ params }) {
   const tmdbKey = TMDB_API_KEY;
   const simklKey = SIMKL_KEY;
 
   const searchText = use(params);
-  // console.log(searchText.movie);
 
   const { user } = useUserAuth();
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [movieList, setMovieList] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
 
 
@@ -91,8 +87,6 @@ export default function SearchResultPage({ params }) {
     setSelectedMovie(null);
   };
 
-
-
   useEffect(() => {
     async function handleSearch(text) {
       const query = text;
@@ -111,42 +105,23 @@ export default function SearchResultPage({ params }) {
           console.warn("No usable search results");
           return;
         }
-        setMovieList(validResults);
+        setSearchResults(validResults);
       } catch (err) {
         console.error("Search failed:", err);
       }
     };
     handleSearch(searchText.movie);
-    // console.log(searchResults);
   }, [user]);
-
-  useEffect(() => {
-    console.log("Movie: ", movieList.length);
-    if (movieList.length != 0) {
-      setSearchResults(movieList);
-      console.log("Search: ", searchResults);
-    }
-  }, [movieList]);
 
   return (
     <div className="bg-black text-white min-h-screen">
       <NavBar />
 
-      {/* {searchResults.length == 0 ? `${searchResults.length} results` : "Empty" } */}
-
-      <MovieRow
+      <MovieList
         title="Search Result"
         movies={searchResults}
         onMovieClick={handleMovieClick}
       />
-
-      {/* <Library type="Trending Now" onMovieClick={handleMovieClick} />
-      <Library type="New Release" onMovieClick={handleMovieClick} /> */}
-
-      {/* Optional genres */}
-      {/* {genres.map((item) => (
-        <Genre key={item} genre={item} onMovieClick={handleMovieClick} />
-      ))} */}
 
       <MovieModal2
         movie={selectedMovie}

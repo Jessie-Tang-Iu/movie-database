@@ -5,18 +5,15 @@ import Library from "../components/Library";
 import Genre from "../components/Genre";
 import NavBar from "../components/NavBar";
 import MovieModal2 from "../components/MovieModel_TMBD";
-import { TMDB_API_KEY, SIMKL_KEY } from "../_utils/thekey";
-import { useUserAuth } from "../_utils/auth-context";
+import { TMDB_API_KEY } from "../_utils/thekey";
 
 const genres = ["action", "comedy", "drama", "horror", "sci-fi"]; // Customize this list
 
 export default function Page() {
   const tmdbKey = TMDB_API_KEY;
-  const simklKey = SIMKL_KEY;
 
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
 
   const handleMovieClick = async (movie) => {
     try {
@@ -84,36 +81,6 @@ export default function Page() {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedMovie(null);
-  };
-
-  const handleSearch = async (text) => {
-    const query = text.trim();
-    if (!query) return;
-
-    try {
-      const url = `https://api.simkl.com/search/movie?q=${encodeURIComponent(
-        query
-      )}&client_id=${simklKey}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      console.log("[Simkl] Raw search data:", data);
-
-      const validResults = data
-        .map((entry) => entry?.movie || entry?.show || entry)
-        .filter((item) => item?.title)
-        .slice(0, 3); // 🔥 Only take 3 results
-
-      if (validResults.length === 0) {
-        console.warn("No usable search results");
-        return;
-      }
-
-      // Try TMDB enrichment on first result
-      const simklMovie = validResults[0];
-      await handleMovieClick(simklMovie);
-    } catch (err) {
-      console.error("Search failed:", err);
-    }
   };
 
   return (
