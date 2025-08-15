@@ -4,6 +4,7 @@ import MovieRow from "./MovieRow";
 import { SIMKL_KEY } from "../_utils/thekey";
 
 const clientID = SIMKL_KEY;
+const max = 10; // max number of movies to fetch per genre
 
 export default function Genre({ genre, onMovieClick }) {
   const [movieList, setMovieList] = useState([]);
@@ -20,11 +21,11 @@ export default function Genre({ genre, onMovieClick }) {
       const data = await response.json();
       if (data != null) {
         let idArray = data.map((movie) => movie.ids.simkl_id);
-        setMovieIds(idArray.slice(0, 2));
+        setMovieIds(idArray.slice(0, max));
         let posterArray = data.map((movie) => movie.poster);
-        setPosterIds(posterArray.slice(0, 2));
+        setPosterIds(posterArray.slice(0, max));
         let durationArray = data.map((movie) => movie.runtime);
-        setDurationList(durationArray.slice(0, 2));
+        setDurationList(durationArray.slice(0, max));
       }
     } catch (error) {
       console.log("Error fetching library data:", error);
